@@ -1,0 +1,67 @@
+module FPC(sign,fraction,exponent,multiple,btn1,btn2,btn3);
+input[8:0]fraction;
+input[7:0]exponent;
+input sign,btn1,btn2,btn3;
+output[17:0] multiple;
+
+reg[8:0]rFraction,rFraction1,rFraction2;
+reg[7:0]rExponent1,rExponent2,rExpSum;
+reg[4:0]carpan,carpilan;
+reg[9:0]carpim;
+reg[4:0]carpimTopla;
+reg a,b,c;
+
+initial begin
+	carpan=5'b0;
+	carpilan=5'b0;
+	carpimTopla=5'b0;
+	carpim=10'b0;
+end
+integer i=0;
+
+always @(btn1,btn2,btn3)
+	begin
+		if(btn1)
+			begin
+				 rFraction1=fraction;
+				 rExponent1=exponent;
+				 carpilan={{1'b1},rFraction1[8:5]};
+				 a=sign;
+			end
+		if(btn2)
+			begin
+				rFraction2=fraction;
+				rExponent2=exponent;
+				carpan={{1'b1},rFraction2[8:5]};
+				b=sign;
+				
+			end
+			
+		if(btn3)
+			begin
+				carpim={5'b0,carpan};
+				c=a^b;
+				rExpSum=rExponent1+rExponent2;
+				rExpSum=rExpSum-127;
+				
+				
+			begin
+			 for(i=1;i<=5;i=i+1)
+				begin
+					if(carpim[0])
+						begin
+							carpimTopla=carpilan+carpim[9:5];
+							carpim={carpimTopla,carpan};
+						end
+					carpim=carpim>>1;
+					carpan=carpim[4:0];
+				end
+			end
+				
+			
+				
+			end
+	end
+	
+	assign multiple={c,rExpSum,carpim[7:0],2'b0};
+endmodule
